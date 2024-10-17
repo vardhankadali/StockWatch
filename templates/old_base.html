@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Data Chart</title>
+    <style>
+        /* Center the div and set width to 50% */
+        .centered-div {
+            width: 50%;                /* 50% of the screen width */
+            margin: 0 auto;             /* Center horizontally */
+            text-align: center;         /* Center any text or content inside */
+            padding: 20px;              /* Optional: padding inside the div */
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <!-- Form to input the stock name -->
+    <form id="stockForm" method="POST">
+        <label for="stock">Enter Stock Name:</label>
+        <input type="text" id="stock" name="text">
+        <button type="submit">Submit</button>
+    </form>
+
+    <!-- Container for the chart -->
+    <div class="centered-div">
+        <canvas id="myChart"></canvas>
+    </div>
+    <!-- <canvas id="myChart" width="400" height="200"></canvas> -->
+
+    <script>
+        let myChart; // Declare the chart variable globally
+
+        document.getElementById('stockForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            // Get the stock name from the input form
+            const stockName = document.getElementById('stock').value;
+
+            // Create a FormData object to send with the POST request
+            const formData = new FormData();
+            formData.append('text', stockName);
+
+            // Fetch the historical data from Flask (POST request)
+            fetch('/historical_data', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                const datasets = data.datasets[0];
+
+                // Extract dates and prices
+                const dates = datasets.values.map(item => item[0]);
+                const prices = datasets.values.map(item => parseFloat(item[1]));
+
+                // Check if the chart already exists
+                if (myChart) {
+                    // Update chart data
+                    myChart.data.labels = dates;
+                    myChart.data.datasets[0].data = prices;
+                    myChart.update(); // Update the chart
+                } else {
+                    // Create a new chart
+                    const ctx = document.getElementById('myChart').getContext('2d');
+                    myChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: dates,
+                            datasets: [{
+                                label: 'Price on NSE',
+                                data: prices,
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 2,
+                                fill: false
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: false
+                                }
+                            }
+                        }
+                    });
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+
+</body>
+</html>

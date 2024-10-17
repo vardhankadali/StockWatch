@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Data Chart</title>
+    <style>
+        /* Center the div and set width to 50% */
+        .centered-div {
+            width: 50%;
+            margin: 0 auto;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Body styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        /* Styling the form */
+        form {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        /* Input styling */
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #dedede;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        /* Button styling */
+        button[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        /* Chart container styling */
+        canvas {
+            margin-top: 40px;
+        }
+
+        /* Responsive layout */
+        @media (max-width: 768px) {
+            .centered-div {
+                width: 90%;
+            }
+
+            form {
+                width: 90%;
+            }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+
+    <!-- Container for the chart -->
+    <div class="centered-div">
+        <canvas id="myChart"></canvas>
+    </div>
+
+    <script>
+        let myChart; // Declare the chart variable globally
+
+        document.getElementById('stockForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            // Get the stock name from the input form
+            const stockName = document.getElementById('stock').value;
+
+            // Create a FormData object to send with the POST request
+            const formData = new FormData();
+            formData.append('text', stockName);
+
+            // Fetch the historical data from Flask (POST request)
+            fetch('/historical_data', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                const datasets = data.datasets[0];
+
+                // Extract dates and prices
+                const dates = datasets.values.map(item => item[0]);
+                const prices = datasets.values.map(item => parseFloat(item[1]));
+
+                // Check if the chart already exists
+                if (myChart) {
+                    // Update chart data
+                    myChart.data.labels = dates;
+                    myChart.data.datasets[0].data = prices;
+                    myChart.update(); // Update the chart
+                } else {
+                    // Create a new chart
+                    const ctx = document.getElementById('myChart').getContext('2d');
+                    myChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: dates,
+                            datasets: [{
+                                label: 'Price on NSE',
+                                data: prices,
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 2,
+                                fill: false
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: false
+                                }
+                            }
+                        }
+                    });
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+
+</body>
+</html>

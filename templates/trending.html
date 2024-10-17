@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trending Stocks</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif; /* Set font for the page */
+            background-color: #f9f9f9; /* Light background color */
+            margin: 0;
+            padding: 20px; /* Padding around the body */
+        }
+        h1 {
+            text-align: center; /* Center the title */
+            color: #333; /* Dark color for the title */
+            margin-bottom: 30px; /* Margin below the title */
+        }
+        .card {
+            background-color: white; /* Card background color */
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            padding: 20px; /* Padding inside the card */
+            margin-bottom: 30px; /* Space between cards */
+        }
+        h2 {
+            color: #4CAF50; /* Green color for section headers */
+            margin: 0 0 15px; /* Margin below the section headers */
+        }
+        table {
+            width: 100%; /* Table takes full width */
+            border-collapse: collapse; /* Collapse borders */
+            margin: 20px 0; /* Margin around the table */
+        }
+        th, td {
+            padding: 12px; /* Padding inside cells */
+            text-align: left; /* Align text to the left */
+            border: 1px solid #ddd; /* Light gray border */
+        }
+        th {
+            background-color: #4CAF50; /* Green background for header */
+            color: white; /* White text for header */
+        }
+        tr:hover {
+            background-color: #f1f1f1; /* Light gray on hover */
+        }
+        .no-data {
+            text-align: center; /* Centered text for no data */
+            color: #888; /* Gray color for no data message */
+        }
+    </style>
+</head>
+<body>
+
+    <div style="text-align: center; margin-top: 20px; padding: 20px;">
+        <h1 style="
+            font-family: Arial, sans-serif; 
+            color: #4CAF50; 
+            font-size: 36px; 
+            margin-bottom: 10px;">
+            Welcome to StockWatch
+        </h1>
+        <p style="
+            font-family: Arial, sans-serif; 
+            color: #333; 
+            font-size: 18px;">
+            Your One-Stop Hub for Trending Stock Insights and Data!
+        </p>
+    </div>
+    
+
+    <div style="display: flex; justify-content: center; margin-top: 20px;">
+        <a href="{{ url_for('historical_data') }}" style="
+            display: inline-block; 
+            background-color: #4CAF50; 
+            color: white; 
+            padding: 15px 30px; 
+            text-decoration: none; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+            text-align: center;
+            transition: transform 0.2s ease;
+            font-family: Arial, sans-serif;
+            font-size: 16px;">
+            <span style="display: block;">View Historical Data</span>
+        </a>
+    </div>
+    
+    
+    
+    
+
+<h1>Trending Stocks</h1>
+
+<div class="card">
+    <h2>Top Gainers</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Company Name</th>
+                <th>Current Price</th>
+                <th>Percent Change</th>
+                <th>Volume</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if context.trending_stocks.top_gainers %}
+                {% for stock in context.trending_stocks.top_gainers %}
+                <tr>
+                    <td>{{ stock.company_name }}</td> <!-- Company name -->
+                    <td>{{ stock.price }}</td> <!-- Current price -->
+                    <td>{{ stock.percent_change }}%</td> <!-- Percent change -->
+                    <td>{{ stock.volume }}</td> <!-- Volume -->
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="4" class="no-data">No top gainers available.</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<div class="card">
+    <h2>Top Losers</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Company Name</th>
+                <th>Current Price</th>
+                <th>Percent Change</th>
+                <th>Volume</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if context.trending_stocks.top_losers %}
+                {% for stock in context.trending_stocks.top_losers %}
+                <tr>
+                    <td>{{ stock.company_name }}</td> <!-- Company name -->
+                    <td>{{ stock.price }}</td> <!-- Current price -->
+                    <td>{{ stock.percent_change }}%</td> <!-- Percent change -->
+                    <td>{{ stock.volume }}</td> <!-- Volume -->
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="4" class="no-data">No top losers available.</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+
+
+</body>
+</html>
